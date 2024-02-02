@@ -8,13 +8,13 @@ export type Hook = {
 
 export type Config = Omit<fabric.ICanvasOptions, "width" | "height"> & {
     forceReload?: boolean
+    listenResize?: boolean
 };
-const defaultCfg: Config = { forceReload: true }
+const defaultCfg: Config = { forceReload: true, listenResize: false }
 
 /**
  * FabricJS Canvas + Canvas Element
  * - Canvas size automatically fits its parent
- * - Listens for window resizes
  */
 export function useFabric(config: Config = {}): Hook {
     const options = {...defaultCfg, ...config}
@@ -36,25 +36,28 @@ export function useFabric(config: Config = {}): Hook {
         else if(canvas === "loading" && !loaded.current)
             setCanvas("error")
 
-            const resizeObserver = new ResizeObserver(entries => {
-                for (const entry of entries) {
-                    const { width, height } = entry.contentRect;
-                    if (canvas instanceof fabric.Canvas) {
-                        canvas.setWidth(width);
-                        canvas.setHeight(height);
-                        canvas.renderAll();
-                    }
+        if (!config.listenResize)
+            return
+        
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                if (canvas instanceof fabric.Canvas) {
+                    canvas.setWidth(width);
+                    canvas.setHeight(height);
+                    canvas.renderAll();
                 }
-            })
-            if (frameRef.current) {
-                resizeObserver.observe(frameRef.current);
             }
-    
-            // Cleanup function to stop observing
-            return () => {
-                if (frameRef.current)
-                    resizeObserver.unobserve(frameRef.current);
-            };
+        })
+        if (frameRef.current) {
+            resizeObserver.observe(frameRef.current);
+        }
+
+        // Cleanup function to stop observing
+        return () => {
+            if (frameRef.current)
+                resizeObserver.unobserve(frameRef.current);
+        };
     }, [canvas, options]);
 
     const key = config.forceReload ? `${Date.now()}` : undefined
