@@ -5,11 +5,11 @@
 ## Installation
 
 ```bash
-npm i use-canvas
+npm i use-fabric
 ```
 
 ```bash
-yarn add use-canvas
+yarn add use-fabric
 ```
 
 ## Usage
