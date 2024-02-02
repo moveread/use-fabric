@@ -6,14 +6,18 @@ export type Hook = {
     canvas: fabric.Canvas | "loading" | "error"
 }
 
-export type Config = Omit<fabric.ICanvasOptions, "width" | "height">;
+export type Config = Omit<fabric.ICanvasOptions, "width" | "height"> & {
+    forceReload?: boolean
+};
+const defaultCfg: Config = { forceReload: true }
 
 /**
  * FabricJS Canvas + Canvas Element
  * - Canvas size automatically fits its parent
  * - Listens for window resizes
  */
-export function useFabric(options: Config = {}): Hook {
+export function useFabric(config: Config = {}): Hook {
+    const options = {...defaultCfg, ...config}
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const frameRef = useRef<HTMLElement | null>(null);
     const [canvas, setCanvas] = useState<fabric.Canvas|"loading"|"error">("loading");
@@ -53,9 +57,11 @@ export function useFabric(options: Config = {}): Hook {
             };
     }, [canvas, options]);
 
+    const key = config.forceReload ? `${Date.now()}` : undefined
+
     const Canvas = (
         <section ref={frameRef} style={{width: "100%", height: "100%"}}>
-            <canvas ref={canvasRef} />
+            <canvas ref={canvasRef} key={key} />
         </section>
     )
     return { Canvas, canvas };
