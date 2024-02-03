@@ -15,10 +15,11 @@ const Btns = styled.div`
 `
 const Frame = styled.div`
   aspect-ratio: 2;
+  border: 1px solid green;
 `
 
 function App() {
-  const { canvas, Canvas } = useFabric({ backgroundColor: 'lightgray' })
+  const { canvas, Canvas, reset } = useFabric({ backgroundColor: 'lightgray' })
   const [width, setWidthRaw] = useState(0.5)
   const setWidth = (w: number) => setWidthRaw(Math.max(0, Math.min(w, 1)))
   useEffect(() => {
@@ -32,6 +33,7 @@ function App() {
       <Btns>
         <button onClick={() => setWidth(width + 0.1)}>Enlarge</button>
         <button onClick={() => setWidth(width - 0.1)}>Shrink</button>
+        <button onClick={reset}>Reset Canvas</button>
       </Btns>
       <Frame style={{ width: `${width * 100}%` }}>
         {Canvas}

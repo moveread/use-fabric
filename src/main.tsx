@@ -4,6 +4,7 @@ import { fabric } from 'fabric'
 export type Hook = {
     Canvas: JSX.Element,
     canvas: fabric.Canvas | "loading" | "error"
+    reset(): void
 }
 
 export type Config = Omit<fabric.ICanvasOptions, "width" | "height"> & {
@@ -23,15 +24,22 @@ export function useFabric(config: Config = {}): Hook {
     const [canvas, setCanvas] = useState<fabric.Canvas|"loading"|"error">("loading");
     const loaded = useRef(false);
 
+    function init() {
+        if (!frameRef.current)
+            return
+        loaded.current = true;
+        const width = frameRef.current.offsetWidth;
+        const height = frameRef.current.offsetHeight;
+        console.debug(`[use-fabric]: New canvas with size [${width}, ${height}]`)
+        const canvas = new fabric.Canvas(canvasRef.current, {
+            ...options, width, height
+        });
+        setCanvas(canvas);
+    }
+
     useEffect(() => {
         if (canvas === "loading" && canvasRef.current && frameRef.current && !loaded.current) {
-            loaded.current = true;
-            const width = frameRef.current.offsetWidth;
-            const height = frameRef.current.offsetHeight;
-            const canvas = new fabric.Canvas(canvasRef.current, {
-                ...options, width, height
-            });
-            setCanvas(canvas);
+            init()
         }
         else if(canvas === "loading" && !loaded.current)
             setCanvas("error")
@@ -67,5 +75,5 @@ export function useFabric(config: Config = {}): Hook {
             <canvas ref={canvasRef} key={key} />
         </section>
     )
-    return { Canvas, canvas };
+    return { Canvas, canvas, reset: init };
 }
