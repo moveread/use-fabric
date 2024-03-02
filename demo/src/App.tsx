@@ -18,7 +18,7 @@ const Frame = styled.div`
   border: 1px solid green;
 `
 
-function App() {
+function Main() {
   const [width, setWidthRaw] = useState(0.5)
   const setWidth = (w: number) => setWidthRaw(Math.max(0, Math.min(w, 1)))
   
@@ -32,7 +32,7 @@ function App() {
     canvas.add(square)
   }, [canvas])
   return (
-    <Layout>
+    <>
       <Btns>
         <button onClick={() => setWidth(width + 0.1)}>Enlarge</button>
         <button onClick={() => setWidth(width - 0.1)}>Shrink</button>
@@ -41,6 +41,16 @@ function App() {
       <Frame style={{ width: `${width * 100}%` }}>
         {Canvas}
       </Frame>
+    </>
+  )
+}
+
+export function App() {
+  const [open, setOpen] = useState(true)
+  return (
+    <Layout>
+      <button onClick={() => setOpen(x => !x)}>Toggle</button>
+      {open && <Main />}
     </Layout>
   )
 }
