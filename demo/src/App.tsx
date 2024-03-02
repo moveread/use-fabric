@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { useFabric } from "./use-fabric/main"
+import { useFabric } from "./use-fabric/use-fabric"
 import { useEffect, useState } from "react"
 import { fabric } from "fabric"
 
@@ -19,11 +19,14 @@ const Frame = styled.div`
 `
 
 function App() {
-  const { canvas, Canvas, reset } = useFabric({ backgroundColor: 'lightgray' })
   const [width, setWidthRaw] = useState(0.5)
   const setWidth = (w: number) => setWidthRaw(Math.max(0, Math.min(w, 1)))
+  
+  const { canvas, Canvas, reset } = useFabric({
+    backgroundColor: 'lightgray'
+  })
   useEffect(() => {
-    if (canvas === 'loading' || canvas === 'error')
+    if (!canvas)
       return
     const square = new fabric.Rect({ width: 128, height: 64, fill: 'darkred' })
     canvas.add(square)
