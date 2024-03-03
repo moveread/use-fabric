@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { useFabric } from "./use-fabric/use-fabric"
+import { useFabric } from "./use-fabric"
 import { useEffect, useState } from "react"
 import { fabric } from "fabric"
 
@@ -22,7 +22,7 @@ function Main() {
   const [width, setWidthRaw] = useState(0.5)
   const setWidth = (w: number) => setWidthRaw(Math.max(0, Math.min(w, 1)))
   
-  const { canvas, Canvas, reset } = useFabric({
+  const { canvas, ref, reset } = useFabric({
     backgroundColor: 'lightgray'
   })
   useEffect(() => {
@@ -39,7 +39,7 @@ function Main() {
         <button onClick={reset}>Reset Canvas</button>
       </Btns>
       <Frame style={{ width: `${width * 100}%` }}>
-        {Canvas}
+        <canvas ref={ref} />
       </Frame>
     </>
   )
